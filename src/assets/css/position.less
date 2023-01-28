@@ -1,0 +1,55 @@
+@minPosition: 1px;
+@maxPosition: 50px;
+@positionList: range(60, 100, 10);
+
+.relative {
+    position: relative;
+}
+
+.absolute {
+    position: absolute;
+}
+
+.fixed {
+    position: fixed;
+}
+
+each(range(@minPosition, @maxPosition), .(@v, @k, @i) {
+        .t-@{i} {
+            top: @v;
+        }
+
+        .r-@{i} {
+            right: @v;
+        }
+
+        .l-@{i} {
+            left: @v;
+        }
+
+        .b-@{i} {
+            bottom: @v;
+        }
+    }
+
+);
+
+each(@positionList, .(@v, @k, @i) {
+        .t-@{v} {
+            top: (@v * 1px);
+        }
+
+        .r-@{v} {
+            right: (@v * 1px);
+        }
+
+        .l-@{v} {
+            left: (@v * 1px);
+        }
+
+        .b-@{v} {
+            bottom: (@v * 1px);
+        }
+    }
+
+);

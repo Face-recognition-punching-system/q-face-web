@@ -1,0 +1,26 @@
+@minBrs : 1px;
+@maxBrs : 150px;
+
+each(range(@minBrs, @maxBrs), .(@v, @k, @i) {
+        .brs@{i} {
+            border-radius: @v;
+        }
+
+        .brs-t-l@{i} {
+            border-top-left-radius: @v  !important;
+        }
+
+        .brs-t-r@{i} {
+            border-top-right-radius: @v  !important;
+        }
+
+        .brs-b-l@{i} {
+            border-bottom-left-radius: @v  !important;
+        }
+
+        .brs-b-r@{i} {
+            border-bottom-right-radius: @v  !important;
+        }
+    }
+
+);
