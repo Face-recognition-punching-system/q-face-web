@@ -3,7 +3,7 @@ import { signIn, signOut } from "next-auth/react";
  * @Author       : Pear107
  * @Date         : 2023-01-30 05:33:57
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-01-30 12:09:35
+ * @LastEditTime : 2023-01-30 18:22:44
  * @FilePath     : \q-face-web\src\pages\api\auth\[...nextauth].ts
  * @Description  : 头部注释
  */
@@ -24,7 +24,7 @@ export default function auth(req: NextApiRequest, res: NextApiResponse) {
         async authorize(credentials, req) {
           try {
             console.log(req.body);
-            return {};
+            return req.body;
           } catch (e) {
             return null;
           }
