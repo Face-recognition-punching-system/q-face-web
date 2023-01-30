@@ -2,15 +2,17 @@
  * @Author       : Pear107
  * @Date         : 2023-01-27 06:41:35
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-01-27 06:41:40
- * @FilePath     : \q-face-web\src\pages\_error.js
+ * @LastEditTime : 2023-01-28 19:18:50
+ * @FilePath     : \q-face-web\src\pages\_error.tsx
  * @Description  : 头部注释
  */
 import Error from "next/error";
 
 export async function getServerSideProps() {
-  const res = await fetch("https://api.github.com/repos/vercel/next.js");
-  const errorCode = res.ok ? false : res.statusCode;
+  const res: Response = await fetch(
+    "https://api.github.com/repos/vercel/next.js"
+  );
+  const errorCode = res.ok ? false : res.status;
   const json = await res.json();
 
   return {
@@ -18,7 +20,13 @@ export async function getServerSideProps() {
   };
 }
 
-export default function Page({ errorCode, stars }) {
+export default function Page({
+  errorCode,
+  stars,
+}: {
+  errorCode: number | false;
+  stars: any;
+}) {
   if (errorCode) {
     return <Error statusCode={errorCode} />;
   }

@@ -2,7 +2,7 @@
  * @Author       : Pear107
  * @Date         : 2023-01-27 06:13:10
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-01-28 10:54:40
+ * @LastEditTime : 2023-01-29 10:14:35
  * @FilePath     : \q-face-web\tailwind.config.js
  * @Description  : tailwindcss 配置
  */
@@ -11,6 +11,13 @@ module.exports = {
   purge: [
     "./src/pages/**/*.{js,ts,jsx,tsx}",
     "./src/components/**/*.{js,ts,jsx,tsx}",
+    "./src/layouts/**/*.{js,ts,jsx,tsx}",
   ],
-  theme: {},
+  theme: {
+    extend: {},
+  },
+  variants: {
+    extend: {},
+  },
+  plugins: [],
 };

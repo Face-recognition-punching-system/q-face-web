@@ -1,6 +1,17 @@
-import React from "react";
+/*
+ * @Author       : Pear107
+ * @Date         : 2023-01-28 23:25:33
+ * @LastEditors  : Pear107
+ * @LastEditTime : 2023-01-29 17:56:22
+ * @FilePath     : \q-face-web\src\pages\userInfo.tsx
+ * @Description  : 头部注释
+ */
+import React, { ReactElement } from "react";
 import { Space, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
+import Head from "next/head";
+
+import IndexLayout from "@/layouts/indexLayout";
 
 interface DataType {
   key: string;
@@ -83,6 +94,19 @@ const data: DataType[] = [
   },
 ];
 
-const UserInfo: React.FC = () => <Table columns={columns} dataSource={data} />;
+const UserInfo = () => {
+  return (
+    <>
+      <Head>
+        <title>员工信息</title>
+      </Head>
+      <Table columns={columns} dataSource={data} />
+    </>
+  );
+};
+
+UserInfo.getLayout = function getLayout(page: ReactElement) {
+  return <IndexLayout>{page}</IndexLayout>;
+};
 
 export default UserInfo;
