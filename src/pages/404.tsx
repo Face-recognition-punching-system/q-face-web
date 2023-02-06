@@ -2,7 +2,7 @@
  * @Author       : Pear107
  * @Date         : 2023-01-25 19:12:12
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-01-28 11:30:11
+ * @LastEditTime : 2023-02-01 06:18:44
  * @FilePath     : \q-face-web\src\pages\404.tsx
  * @Description  : 404 页面
  */
@@ -10,7 +10,7 @@ import Image from "next/image";
 import { Button } from "antd";
 import { useRouter } from "next/router";
 
-import img404 from "@/assets/img/404.svg";
+import img404 from "@/public/svgs/404.svg";
 
 const Custom404 = () => {
   const router = useRouter();

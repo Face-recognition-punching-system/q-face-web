@@ -2,7 +2,7 @@
  * @Author       : Pear107
  * @Date         : 2023-01-27 06:41:35
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-01-28 19:18:50
+ * @LastEditTime : 2023-02-01 06:14:47
  * @FilePath     : \q-face-web\src\pages\_error.tsx
  * @Description  : 头部注释
  */

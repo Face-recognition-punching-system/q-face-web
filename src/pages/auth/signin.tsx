@@ -2,99 +2,98 @@
  * @Author       : Pear107
  * @Date         : 2023-01-29 10:28:11
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-01-30 12:07:00
- * @FilePath     : \q-face-web\src\pages\auth\signin.tsx
+ * @LastEditTime : 2023-02-06 16:29:13
+ * @FilePath     : \q-face-web\src\pages\auth\signIn.tsx
  * @Description  : 头部注释
  */
 import React from "react";
 import Image from "next/image";
-import { Button, Checkbox, Form, Input, message, Space } from "antd";
+import { Button, Form, Input, message } from "antd";
 import Head from "next/head";
 import { signIn } from "next-auth/react";
 import { getCsrfToken } from "next-auth/react";
 
-import imgSignin from "@/assets/img/signin.svg";
+import imgSignIn from "@/public/svgs/signIn.svg";
 
-const Signin: React.FC<{ csrfToken: any }> = () => {
+const SignIn: React.FC<{ csrfToken: any }> = () => {
   const [messageApi, contextHolder] = message.useMessage();
-  const onFinish = async () => {
-    // router.replace("/");
+  const onFinish = async (values: { adminId: string; password: string }) => {
     const csrfToken = await getCsrfToken();
-    const data = {
-      csrfToken: csrfToken,
-      username: "hello world",
-      password: "hello world",
+    if (csrfToken == undefined) {
+      return;
+    }
+    const data: {
+      adminId: string;
+      password?: string;
+      csrfToken: string;
+      id?: string;
+    } = {
+      csrfToken,
+      ...values,
     };
-    // let ret = "";
-    // for (let it in data) {
-    //   ret += encodeURIComponent(it) + "=" + encodeURIComponent(data[it]) + "&";
-    // }
-    signIn("credentials", { ...data, callbackUrl: "http://localhost:3000/" });
-  };
-
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
-    messageApi.open({
-      type: "error",
-      content: "登录失败",
+    try {
+      const retPromise = await fetch("/api/signIn", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      const ret = await retPromise.json();
+      if (ret.id) {
+        data["id"] = ret.id;
+        delete data.password;
+        signIn("credentials", data, { callbackUrl: "http://localhost:3000/" });
+      } else {
+        messageApi.error("登录失败，请确认账户密码是否正确");
+      }
+    } catch (e) {
+      messageApi.error("登录失败，网络错误");
+    }
+    signIn("credentials", {
+      ...data,
+      redirect: false,
     });
   };
 
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-teal-500">
-      {contextHolder}
+    <>
       <Head>
         <title>登录页</title>
       </Head>
-      <section className="flex items-center gap-5 p-5 rounded-md bg-gray-100">
-        <Image src={imgSignin} alt="404" height={404} />
-        <Form
-          name="basic"
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
-          style={{ maxWidth: 600 }}
-          initialValues={{ remember: true }}
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
-          autoComplete="off"
-        >
-          <Form.Item>
-            <Input
-              type="hidden"
-              name="csrfToken"
-              value="8c0fd6a5c4e8b28db71f5425047a798460a957f7ac638f2d179bc08dfc529fcf"
-            />
-          </Form.Item>
-          <Form.Item
-            label="Username"
-            name="username"
-            rules={[{ required: true, message: "Please input your username!" }]}
+      {contextHolder}
+      <div className="w-full h-screen flex items-center justify-center bg-teal-500">
+        <section className="flex items-center gap-5 p-5 rounded-md bg-gray-100">
+          <Image src={imgSignIn} alt="404" height={404} />
+          <Form
+            name="login"
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 16 }}
+            initialValues={{ remember: true }}
+            onFinish={onFinish}
+            autoComplete="off"
           >
-            <Input type="text" />
-          </Form.Item>
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[{ required: true, message: "Please input your password!" }]}
-          >
-            <Input.Password type="password" />
-          </Form.Item>
-
-          <Form.Item
-            name="remember"
-            valuePropName="checked"
-            wrapperCol={{ offset: 8, span: 16 }}
-          >
-            <Checkbox>Remember me</Checkbox>
-          </Form.Item>
-
-          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-            <Button htmlType="submit">登录</Button>
-          </Form.Item>
-        </Form>
-      </section>
-    </div>
+            {/* 占位 */}
+            <Form.Item />
+            <Form.Item
+              label="用户名"
+              name="adminId"
+              rules={[{ required: true, message: "请输入你的用户名" }]}
+            >
+              <Input maxLength={16} />
+            </Form.Item>
+            <Form.Item
+              label="密码"
+              name="password"
+              rules={[{ required: true, message: "请输入你的密码" }]}
+            >
+              <Input.Password maxLength={16} />
+            </Form.Item>
+            <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+              <Button htmlType="submit">登录</Button>
+            </Form.Item>
+          </Form>
+        </section>
+      </div>
+    </>
   );
 };
 
-export default Signin;
+export default SignIn;
