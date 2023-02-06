@@ -2,7 +2,11 @@
  * @Author       : Pear107
  * @Date         : 2023-01-30 05:33:57
  * @LastEditors  : Pear107
+<<<<<<< HEAD
  * @LastEditTime : 2023-02-06 05:31:38
+=======
+ * @LastEditTime : 2023-01-30 18:24:02
+>>>>>>> 80ee4a84fc3579c6e27c241dc17199ffb52842f5
  * @FilePath     : \q-face-web\src\pages\api\auth\[...nextauth].ts
  * @Description  : 头部注释
  */
@@ -29,9 +33,16 @@ export default function auth(req: NextApiRequest, res: NextApiResponse) {
         credentials: {},
         async authorize(credentials, req) {
           try {
+<<<<<<< HEAD
             if (req.body === undefined) {
               return null;
             }
+=======
+            console.log(req.body);
+            console.log(req.body);
+            console.log(req.body);
+            console.log(req.body);
+>>>>>>> 80ee4a84fc3579c6e27c241dc17199ffb52842f5
             return req.body;
           } catch (e) {
             return null;
