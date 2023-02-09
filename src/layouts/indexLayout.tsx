@@ -2,11 +2,11 @@
  * @Author       : Pear107
  * @Date         : 2023-01-28 19:20:36
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-02-06 16:42:05
+ * @LastEditTime : 2023-02-07 07:51:33
  * @FilePath     : \q-face-web\src\layouts\indexLayout.tsx
  * @Description  : 头部注释
  */
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import type { ReactElement } from "react";
 import { Layout, Menu, Avatar, Image, MenuProps, Dropdown, Space } from "antd";
 import { Modal, Input, Form, message } from "antd";
@@ -25,10 +25,8 @@ import { useRouter } from "next/router";
 const { Header, Footer, Sider, Content } = Layout;
 const IndexLayout = ({ children }: { children: ReactElement }) => {
   const { data: session } = useSession({ required: true });
-  const user: { id: string; csrfToken: string } = session?.user as {
-    id: string;
-    csrfToken: string;
-  };
+  const user: { id: string; csrfToken: string; adminId: string } =
+    session?.user as { id: string; csrfToken: string; adminId: string };
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   let key = ["1"];
   const router = useRouter();
@@ -196,7 +194,9 @@ const IndexLayout = ({ children }: { children: ReactElement }) => {
             <Dropdown menu={{ items }}>
               <a onClick={(e) => e.preventDefault()}>
                 <Space className="flex items-center">
-                  <span className="text-white cursor-pointer">管理员</span>
+                  <span className="text-white cursor-pointer">
+                    {session?.user?.adminId}
+                  </span>
                   <Avatar
                     src={
                       <Image

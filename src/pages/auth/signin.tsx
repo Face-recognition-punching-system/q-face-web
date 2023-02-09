@@ -2,7 +2,7 @@
  * @Author       : Pear107
  * @Date         : 2023-01-29 10:28:11
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-02-06 16:29:13
+ * @LastEditTime : 2023-02-07 07:34:52
  * @FilePath     : \q-face-web\src\pages\auth\signIn.tsx
  * @Description  : 头部注释
  */
@@ -38,19 +38,16 @@ const SignIn: React.FC<{ csrfToken: any }> = () => {
       });
       const ret = await retPromise.json();
       if (ret.id) {
+        console.log(data);
         data["id"] = ret.id;
-        delete data.password;
-        signIn("credentials", data, { callbackUrl: "http://localhost:3000/" });
+        data["password"] = "";
+        signIn("credentials", {...data, callbackUrl:"http://localhost:3000/"});
       } else {
         messageApi.error("登录失败，请确认账户密码是否正确");
       }
     } catch (e) {
       messageApi.error("登录失败，网络错误");
     }
-    signIn("credentials", {
-      ...data,
-      redirect: false,
-    });
   };
 
   return (

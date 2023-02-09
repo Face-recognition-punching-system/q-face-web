@@ -2,11 +2,7 @@
  * @Author       : Pear107
  * @Date         : 2023-01-30 05:33:57
  * @LastEditors  : Pear107
-<<<<<<< HEAD
- * @LastEditTime : 2023-02-06 05:31:38
-=======
- * @LastEditTime : 2023-01-30 18:24:02
->>>>>>> 80ee4a84fc3579c6e27c241dc17199ffb52842f5
+ * @LastEditTime : 2023-02-07 23:29:30
  * @FilePath     : \q-face-web\src\pages\api\auth\[...nextauth].ts
  * @Description  : 头部注释
  */
@@ -14,8 +10,6 @@ import NextAuth, { Account } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { JWT } from "next-auth/jwt";
-
-import { postAxios } from "@/utils/axios";
 
 type USER = {
   id: string;
@@ -33,16 +27,9 @@ export default function auth(req: NextApiRequest, res: NextApiResponse) {
         credentials: {},
         async authorize(credentials, req) {
           try {
-<<<<<<< HEAD
             if (req.body === undefined) {
               return null;
             }
-=======
-            console.log(req.body);
-            console.log(req.body);
-            console.log(req.body);
-            console.log(req.body);
->>>>>>> 80ee4a84fc3579c6e27c241dc17199ffb52842f5
             return req.body;
           } catch (e) {
             return null;
@@ -88,7 +75,6 @@ export default function auth(req: NextApiRequest, res: NextApiResponse) {
         };
         token: JWT & { user: USER };
       }) {
-        // 自定义会话中的user（因为默认的会话中的user信息不能满足我们的需求）
         session.user = token.user;
         return session;
       },

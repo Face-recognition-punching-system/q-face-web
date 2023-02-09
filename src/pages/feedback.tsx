@@ -2,7 +2,7 @@
  * @Author       : Pear107
  * @Date         : 2023-01-31 21:32:30
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-02-06 16:46:17
+ * @LastEditTime : 2023-02-07 07:47:52
  * @FilePath     : \q-face-web\src\pages\feedback.tsx
  * @Description  : 头部注释
  */
@@ -200,7 +200,6 @@ Feedback.getLayout = function getLayout(page: ReactElement) {
 export const getServerSideProps: GetServerSideProps = async () => {
   let data1: Data1Type[] = [];
   let data2: Data2Type[] = [];
-
   try {
     const resPromise1 = getAxios("/admin/feedback", {});
     const resPromise2 = getAxios("/admin/feedbackRes", {});
