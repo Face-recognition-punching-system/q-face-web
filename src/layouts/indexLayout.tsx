@@ -2,7 +2,7 @@
  * @Author       : Pear107
  * @Date         : 2023-01-28 19:20:36
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-02-07 07:51:33
+ * @LastEditTime : 2023-03-07 08:35:10
  * @FilePath     : \q-face-web\src\layouts\indexLayout.tsx
  * @Description  : 头部注释
  */
@@ -34,8 +34,12 @@ const IndexLayout = ({ children }: { children: ReactElement }) => {
     key = ["1"];
   } else if (router.pathname === "/workerInfo") {
     key = ["2"];
-  } else if (router.pathname === "/feedback") {
+  } else if (router.pathname === "/askForLeave") {
     key = ["3"];
+  } else if (router.pathname === "/feedback") {
+    key = ["4"];
+  } else if (router.pathname === "/statistics") {
+    key = ["5"];
   }
   const items: MenuProps["items"] = [
     {
@@ -78,7 +82,15 @@ const IndexLayout = ({ children }: { children: ReactElement }) => {
     },
     {
       key: "3",
-      label: <Link href="/feedback">打卡反馈</Link>,
+      label: <Link href="/askForLeave">请假管理</Link>,
+    },
+    {
+      key: "4",
+      label: <Link href="/feedback">反馈管理</Link>,
+    },
+    {
+      key: "5",
+      label: <Link href="/statistics">数据统计</Link>,
     },
   ];
   return (
@@ -210,7 +222,7 @@ const IndexLayout = ({ children }: { children: ReactElement }) => {
               </a>
             </Dropdown>
           </Header>
-          <Content className="mx-3 my-4 bg-gray-100">{children}</Content>
+          <Content className="mx-4 my-5 bg-gray-100">{children}</Content>
           <Footer>Footer</Footer>
         </Layout>
       </Layout>

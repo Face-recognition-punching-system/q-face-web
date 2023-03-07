@@ -1,12 +1,13 @@
 /*
  * @Author       : Pear107
- * @Date         : 2023-01-16 17:00:02
+ * @Date         : 2023-01-30 19:39:26
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-02-06 04:50:48
+ * @LastEditTime : 2023-03-07 07:45:44
  * @FilePath     : \q-face-web\src\pages\_app.tsx
- * @Description  : 启动页
+ * @Description  : 头部注释
  */
 import "tailwindcss/tailwind.css";
+import "../styles/index.less";
 import { SessionProvider, useSession } from "next-auth/react";
 import type { ReactElement, ReactNode } from "react";
 import type { NextPage } from "next";
@@ -37,7 +38,6 @@ export default function App({
   const getLayout = Component.getLayout || ((page) => page);
   return (
     <SessionProvider session={session}>
-      {/* where the page has auth property, it should be sign in to visit */}
       {Component.auth ? (
         <Auth>
           getLayout(

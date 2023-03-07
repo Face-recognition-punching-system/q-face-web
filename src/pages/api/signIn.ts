@@ -3,23 +3,21 @@ import { message } from "antd";
  * @Author       : Pear107
  * @Date         : 2023-01-31 22:33:34
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-02-06 22:12:28
+ * @LastEditTime : 2023-03-06 21:11:19
  * @FilePath     : \q-face-web\src\pages\api\signIn.ts
  * @Description  : 头部注释
  */
 import type { NextApiRequest, NextApiResponse } from "next";
-import axios from "axios";
+import { postAxios } from "@/utils/axios";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   (async () => {
     try {
       const data = JSON.parse(req.body);
-      const ret = await axios.post("http://127.0.0.1:8888/admin/signIn", {
-        ...data,
-      });
-      res.status(200).json(ret.data);
+      const ret = await postAxios("/admin/signIn", data);
+      res.status(200).json(ret);
     } catch (err) {
-      res.status(500).json({ message: "unknown error" });
+      res.status(500).json({ message: err });
     }
   })();
 }

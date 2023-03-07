@@ -2,7 +2,7 @@
  * @Author       : Pear107
  * @Date         : 2023-01-29 10:28:11
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-02-07 07:34:52
+ * @LastEditTime : 2023-03-06 20:55:33
  * @FilePath     : \q-face-web\src\pages\auth\signIn.tsx
  * @Description  : 头部注释
  */
@@ -13,7 +13,7 @@ import Head from "next/head";
 import { signIn } from "next-auth/react";
 import { getCsrfToken } from "next-auth/react";
 
-import imgSignIn from "@/public/svgs/signIn.svg";
+import imgSignIn from "@/assets/svgs/signIn.svg";
 
 const SignIn: React.FC<{ csrfToken: any }> = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -36,12 +36,20 @@ const SignIn: React.FC<{ csrfToken: any }> = () => {
         method: "POST",
         body: JSON.stringify(data),
       });
+
+      if (retPromise.status !== 200) {
+        throw Error;
+      }
+
       const ret = await retPromise.json();
       if (ret.id) {
         console.log(data);
         data["id"] = ret.id;
         data["password"] = "";
-        signIn("credentials", {...data, callbackUrl:"http://localhost:3000/"});
+        signIn("credentials", {
+          ...data,
+          callbackUrl: "http://localhost:3000/",
+        });
       } else {
         messageApi.error("登录失败，请确认账户密码是否正确");
       }

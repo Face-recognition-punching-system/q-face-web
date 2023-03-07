@@ -1,8 +1,16 @@
 /*
  * @Author       : Pear107
+ * @Date         : 2023-02-06 21:55:48
+ * @LastEditors  : Pear107
+ * @LastEditTime : 2023-03-07 08:22:20
+ * @FilePath     : \q-face-web\src\pages\index.tsx
+ * @Description  : 头部注释
+ */
+/*
+ * @Author       : Pear107
  * @Date         : 2023-01-16 14:32:39
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-02-06 16:43:24
+ * @LastEditTime : 2023-03-07 08:09:35
  * @FilePath     : \q-face-web\src\pages\index.tsx
  * @Description  : 主页
  */
@@ -15,6 +23,8 @@ import type { ColumnsType } from "antd/es/table";
 
 import IndexLayout from "@/layouts/indexLayout";
 import { getAxios } from "@/utils/axios";
+import Calendar from "@/components/calendar";
+import styles from "./index.module.less";
 
 interface ClockType {
   workerId: string;
@@ -92,10 +102,16 @@ const Index = ({
   return (
     <>
       <Head>
-        <title>首页</title>
+        <title>今日打卡</title>
       </Head>
-      <section>
-        <Tabs defaultActiveKey="1" type="card" items={items} />
+      <section className={styles.container}>
+        <Tabs
+          defaultActiveKey="1"
+          type="card"
+          items={items}
+          className={styles.tabs}
+        />
+        <Calendar />
       </section>
     </>
   );

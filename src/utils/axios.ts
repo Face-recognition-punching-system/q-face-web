@@ -2,7 +2,7 @@
  * @Author       : Pear107
  * @Date         : 2023-02-05 15:10:54
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-02-05 16:23:45
+ * @LastEditTime : 2023-03-06 20:49:02
  * @FilePath     : \q-face-web\src\utils\axios.ts
  * @Description  : 头部注释
  */
@@ -40,12 +40,16 @@ axios.interceptors.request.use(
 // get request
 export function getAxios(url: string, data: { [key: string]: string }) {
   return new Promise((resolve, reject) => {
-    axios(baseURL+url, {
+    axios(baseURL + url, {
       method: "GET",
       data,
     })
       .then((res) => {
-        resolve(res.data);
+        if (res.status === 200) {
+          resolve(res.data);
+        } else {
+          reject(res.statusText);
+        }
       })
       .catch((err) => {
         reject(err);
@@ -56,12 +60,16 @@ export function getAxios(url: string, data: { [key: string]: string }) {
 // post request
 export function postAxios(url: string, data: { [key: string]: string }) {
   return new Promise((resolve, reject) => {
-    axios(baseURL+url, {
+    axios(baseURL + url, {
       method: "POST",
       data,
     })
       .then((res) => {
-        resolve(res.data);
+        if (res.status === 200) {
+          resolve(res.data);
+        } else {
+          reject(res.statusText);
+        }
       })
       .catch((err) => {
         reject(err);

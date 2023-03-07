@@ -2,7 +2,7 @@
  * @Author       : Pear107
  * @Date         : 2023-01-30 05:33:57
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-02-07 23:29:30
+ * @LastEditTime : 2023-03-06 21:16:21
  * @FilePath     : \q-face-web\src\pages\api\auth\[...nextauth].ts
  * @Description  : 头部注释
  */
@@ -30,6 +30,7 @@ export default function auth(req: NextApiRequest, res: NextApiResponse) {
             if (req.body === undefined) {
               return null;
             }
+
             return req.body;
           } catch (e) {
             return null;

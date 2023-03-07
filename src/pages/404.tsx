@@ -10,7 +10,7 @@ import Image from "next/image";
 import { Button } from "antd";
 import { useRouter } from "next/router";
 
-import img404 from "@/public/svgs/404.svg";
+import img404 from "@/assets/svgs/404.svg";
 
 const Custom404 = () => {
   const router = useRouter();
