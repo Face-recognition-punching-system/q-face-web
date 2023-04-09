@@ -2,12 +2,11 @@
  * @Author       : Pear107
  * @Date         : 2023-03-06 21:21:19
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-03-07 08:11:53
+ * @LastEditTime : 2023-04-04 15:08:06
  * @FilePath     : \q-face-web\src\components\calendar\index.tsx
  * @Description  : 头部注释
  */
 import React, { useEffect, useRef, useState } from "react";
-import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
 import styles from "./index.module.less";
 

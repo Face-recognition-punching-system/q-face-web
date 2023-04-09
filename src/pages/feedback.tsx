@@ -2,23 +2,22 @@
  * @Author       : Pear107
  * @Date         : 2023-01-31 21:32:30
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-02-07 07:47:52
+ * @LastEditTime : 2023-04-07 00:43:21
  * @FilePath     : \q-face-web\src\pages\feedback.tsx
  * @Description  : 头部注释
  */
-import React, { ReactElement } from "react";
-import { Table, Tag, Tabs, Button, Space, Modal } from "antd";
+import React, { ReactElement, useEffect, useState } from "react";
+import { Table, Tag, Tabs, Button, Space } from "antd";
 import type { TabsProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useSession } from "next-auth/react";
-
-import IndexLayout from "@/layouts/indexLayout";
-import { getAxios } from "@/utils/axios";
 import { useRouter } from "next/router";
 
-interface Data1Type {
+import IndexLayout from "@/layouts/indexLayout";
+import { postAxios } from "@/utils/axios";
+
+interface NotDealType {
   fid: string;
   cid: string;
   workerId: string;
@@ -27,27 +26,26 @@ interface Data1Type {
   reason: string;
 }
 
-interface Data2Type {
+interface DealType {
   workerId: string;
   name: string;
   create_time: string;
   reason: string;
-  res: string;
+  result: string;
 }
 
-const Feedback = ({
-  data1,
-  data2,
-}: {
-  data1: Data1Type[];
-  data2: Data2Type[];
-}) => {
+const Feedback: {
+  (): JSX.Element;
+  getLayout(page: ReactElement): JSX.Element;
+} = () => {
+  const [notDeal, setNotDeal] = useState<NotDealType[]>([]);
+  const [deal, setDeal] = useState<DealType[]>([]);
   const { data: session } = useSession({ required: true });
   const user: { id: string; csrfToken: string } = session?.user as {
     id: string;
     csrfToken: string;
   };
-  const columns1: ColumnsType<Data1Type> = [
+  const columns1: ColumnsType<NotDealType> = [
     {
       title: "员工号",
       dataIndex: "workerId",
@@ -80,13 +78,9 @@ const Feedback = ({
                 cid,
                 csrfToken: user.csrfToken,
                 id: user.id,
-                res: "通过",
+                result: "1",
               };
-              const retPromise = await fetch("/api/updateFeedback", {
-                method: "POST",
-                body: JSON.stringify(data),
-              });
-              const ret = await retPromise.json();
+              const ret: any = postAxios("/admin/updateFeedback", data);
               if (ret.message == "success") {
                 console.log("操作成功");
               } else {
@@ -103,13 +97,9 @@ const Feedback = ({
                 cid,
                 csrfToken: user.csrfToken,
                 id: user.id,
-                res: "不通过",
+                result: "0",
               };
-              const retPromise = await fetch("/api/updateFeedback", {
-                method: "POST",
-                body: JSON.stringify(data),
-              });
-              const ret = await retPromise.json();
+              const ret: any = await postAxios("/admin/updateFeedback", data);
               if (ret.message) {
                 const router = useRouter();
                 router.reload();
@@ -125,7 +115,7 @@ const Feedback = ({
       ),
     },
   ];
-  const columns2: ColumnsType<Data2Type> = [
+  const columns2: ColumnsType<DealType> = [
     {
       title: "员工号",
       dataIndex: "workerId",
@@ -150,8 +140,10 @@ const Feedback = ({
       title: "结果",
       key: "res",
       dataIndex: "res",
-      render: (_, { res }) => (
-        <Tag color={res === "通过" ? "green" : "red"}>{res}</Tag>
+      render: (_, { result }) => (
+        <Tag color={result === "1" ? "green" : "red"}>
+          {result === "1" ? "通过" : "未通过"}
+        </Tag>
       ),
     },
   ];
@@ -163,7 +155,7 @@ const Feedback = ({
         <Table
           rowKey={(r) => r.workerId}
           columns={columns1}
-          dataSource={data1}
+          dataSource={notDeal}
           className="cursor-default"
         />
       ),
@@ -175,16 +167,42 @@ const Feedback = ({
         <Table
           rowKey={(r) => r.workerId}
           columns={columns2}
-          dataSource={data2}
+          dataSource={deal}
           className="cursor-default"
         />
       ),
     },
   ];
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = {
+          // @ts-ignore
+          id: session?.user?.id,
+          // @ts-ignore
+          csrfToken: session?.user?.csrfToken,
+        };
+        const notDealPromise = await postAxios("/admin/getFeedback", data);
+        const dealPromise = await postAxios("/admin/getFeedbackResult", data);
+        const [notDeal, deal] = await Promise.all([
+          notDealPromise,
+          dealPromise,
+        ]);
+        if (Array.isArray(notDeal)) {
+          setNotDeal(() => notDeal);
+        }
+
+        if (Array.isArray(deal)) {
+          setDeal(() => deal);
+        }
+      } catch (error) {}
+    })();
+  }, []);
   return (
     <>
       <Head>
-        <title>打卡反馈</title>
+        <title>反馈管理</title>
       </Head>
       <section>
         <Tabs defaultActiveKey="1" type="card" items={items} />
@@ -195,28 +213,6 @@ const Feedback = ({
 
 Feedback.getLayout = function getLayout(page: ReactElement) {
   return <IndexLayout>{page}</IndexLayout>;
-};
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  let data1: Data1Type[] = [];
-  let data2: Data2Type[] = [];
-  try {
-    const resPromise1 = getAxios("/admin/feedback", {});
-    const resPromise2 = getAxios("/admin/feedbackRes", {});
-    const res1 = await resPromise1;
-    const res2 = await resPromise2;
-    console.log(res1);
-    console.log(res2);
-    if (Array.isArray(res1)) {
-      data1 = res1;
-    }
-    if (Array.isArray(res2)) {
-      data2 = res2;
-    }
-  } catch (error) {}
-  return {
-    props: { data1, data2 },
-  };
 };
 
 export default Feedback;

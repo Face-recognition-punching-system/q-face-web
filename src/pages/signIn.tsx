@@ -2,11 +2,11 @@
  * @Author       : Pear107
  * @Date         : 2023-01-29 10:28:11
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-03-06 20:55:33
- * @FilePath     : \q-face-web\src\pages\auth\signIn.tsx
+ * @LastEditTime : 2023-04-05 21:09:09
+ * @FilePath     : \q-face-web\src\pages\signIn.tsx
  * @Description  : 头部注释
  */
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Button, Form, Input, message } from "antd";
 import Head from "next/head";
@@ -14,10 +14,17 @@ import { signIn } from "next-auth/react";
 import { getCsrfToken } from "next-auth/react";
 
 import imgSignIn from "@/assets/svgs/signIn.svg";
+import { postAxios } from "@/utils/axios";
 
 const SignIn: React.FC<{ csrfToken: any }> = () => {
   const [messageApi, contextHolder] = message.useMessage();
+  const [time, setTime] = useState<number>(0);
+  const timerRef = useRef<any>(null);
+  const handleTimer = () => {
+    setTime(() => time - 1);
+  };
   const onFinish = async (values: { adminId: string; password: string }) => {
+    setTime(() => 10);
     const csrfToken = await getCsrfToken();
     if (csrfToken == undefined) {
       return;
@@ -32,18 +39,8 @@ const SignIn: React.FC<{ csrfToken: any }> = () => {
       ...values,
     };
     try {
-      const retPromise = await fetch("/api/signIn", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-
-      if (retPromise.status !== 200) {
-        throw Error;
-      }
-
-      const ret = await retPromise.json();
+      const ret: any = await postAxios("/admin/signIn", data);
       if (ret.id) {
-        console.log(data);
         data["id"] = ret.id;
         data["password"] = "";
         signIn("credentials", {
@@ -54,10 +51,25 @@ const SignIn: React.FC<{ csrfToken: any }> = () => {
         messageApi.error("登录失败，请确认账户密码是否正确");
       }
     } catch (e) {
-      messageApi.error("登录失败，网络错误");
+      messageApi.error("登录失败，服务器错误");
     }
   };
 
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (time > 0) {
+      timerRef.current = setTimeout(handleTimer, 1000);
+    } else {
+      clearTimeout(timerRef.current);
+    }
+  }, [time]);
   return (
     <>
       <Head>
@@ -92,7 +104,9 @@ const SignIn: React.FC<{ csrfToken: any }> = () => {
               <Input.Password maxLength={16} />
             </Form.Item>
             <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-              <Button htmlType="submit">登录</Button>
+              <Button disabled={time !== 0} htmlType="submit">
+                {time === 0 ? "登录" : time + "s"}
+              </Button>
             </Form.Item>
           </Form>
         </section>

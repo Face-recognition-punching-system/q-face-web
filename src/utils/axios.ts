@@ -1,48 +1,38 @@
+import { Html } from "next/document";
 /*
  * @Author       : Pear107
  * @Date         : 2023-02-05 15:10:54
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-03-06 20:49:02
+ * @LastEditTime : 2023-04-05 22:36:12
  * @FilePath     : \q-face-web\src\utils\axios.ts
  * @Description  : 头部注释
  */
-import axios, { AxiosResponse } from "axios";
+import axios, {
+  AxiosError,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+  AxiosInstance,
+} from "axios";
+import { useSession } from "next-auth/react";
 
-let baseURL: string;
-if (process.env.NODE_ENV === "production") {
-  baseURL = "http://127.0.0.1:8888";
-} else {
-  baseURL = "http://127.0.0.1:8888";
-}
-
-// interceptor
-axios.interceptors.response.use(
-  (response: AxiosResponse) => {
-    return response;
+const host: string = "http://localhost:3000";
+const instance: AxiosInstance = axios.create({
+  headers: {
+    Accept: "application/vnd.dpexpo.v1+json",
+    Authorization: "",
+    "Content-Type": "application/x-www-form-urlencoded",
   },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+  baseURL: host + "/api-cpp",
+});
 
-axios.interceptors.request.use(
-  (config) => {
-    config.headers["Accept"] = "application/vnd.dpexpo.v1+json";
-    config.headers["Content-Type"] = "application/json";
-    config.baseURL = baseURL;
-    config.timeout = 10000;
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-// get request
-export function getAxios(url: string, data: { [key: string]: string }) {
+export function getAxios(
+  url: string,
+  data: { [key: string]: string } | string
+) {
   return new Promise((resolve, reject) => {
-    axios(baseURL + url, {
+    instance(url, {
       method: "GET",
-      data,
+      data: data,
     })
       .then((res) => {
         if (res.status === 200) {
@@ -57,12 +47,14 @@ export function getAxios(url: string, data: { [key: string]: string }) {
   });
 }
 
-// post request
-export function postAxios(url: string, data: { [key: string]: string }) {
+export function postAxios(
+  path: string,
+  data: { [key: string]: string } | string
+) {
   return new Promise((resolve, reject) => {
-    axios(baseURL + url, {
+    instance(path, {
       method: "POST",
-      data,
+      data: data,
     })
       .then((res) => {
         if (res.status === 200) {
@@ -76,5 +68,3 @@ export function postAxios(url: string, data: { [key: string]: string }) {
       });
   });
 }
-
-export default axios;

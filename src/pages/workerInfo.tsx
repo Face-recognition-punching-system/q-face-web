@@ -2,21 +2,20 @@
  * @Author       : Pear107
  * @Date         : 2023-01-28 23:25:33
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-02-09 12:23:21
+ * @LastEditTime : 2023-04-05 22:53:55
  * @FilePath     : \q-face-web\src\pages\workerInfo.tsx
  * @Description  : 头部注释
  */
-import React, { ReactElement, useState, useRef } from "react";
+import React, { ReactElement, useState, useRef, useEffect } from "react";
 import { Button, Space, Table, Modal, Image, Tag } from "antd";
 import { List, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import Head from "next/head";
-import { GetServerSideProps } from "next";
 import { useSession } from "next-auth/react";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 
 import IndexLayout from "@/layouts/indexLayout";
-import { getAxios } from "@/utils/axios";
+import { postAxios } from "@/utils/axios";
 
 interface DataType {
   id: string;
@@ -26,7 +25,11 @@ interface DataType {
   department: string;
 }
 
-const WorkerInfo = ({ data }: { data: DataType[] }) => {
+const WorkerInfo: {
+  (): JSX.Element;
+  getLayout(page: ReactElement): JSX.Element;
+} = () => {
+  const [data, setData] = useState<DataType[]>([]);
   const { data: session } = useSession({ required: true });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [wid, setWid] = useState("");
@@ -42,6 +45,7 @@ const WorkerInfo = ({ data }: { data: DataType[] }) => {
       return;
     }
     setIsModalOpen(false);
+    // @ts-ignore
     const user: { id: string; csrfToken: string } = session?.user as {
       id: string;
       csrfToken: string;
@@ -54,12 +58,7 @@ const WorkerInfo = ({ data }: { data: DataType[] }) => {
           img: imageUrl.replace(/^data:image\/\w+;base64,/, ""),
           wid: wid,
         };
-        const retPromise = await fetch("/api/updateWorkerImg", {
-          method: "POST",
-          body: JSON.stringify(data),
-        });
-        const ret = await retPromise.json();
-        console.log(ret);
+        const ret: any = await postAxios("/admin/updateWorkerImg", data);
         if (ret.message === "success") {
           messageApi.success("更新成功");
         } else {
@@ -80,12 +79,12 @@ const WorkerInfo = ({ data }: { data: DataType[] }) => {
   const beforeUpload = (file: File) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
     if (!isJpgOrPng) {
-      message.error("You can only upload JPG/PNG file!");
+      message.error("必须上传 PNG 或 JPG 格式图片!");
     }
 
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      message.error("Image must smaller than 2MB!");
+      message.error("图片必须小于 2MB!");
     }
 
     return isJpgOrPng && isLt2M;
@@ -116,6 +115,7 @@ const WorkerInfo = ({ data }: { data: DataType[] }) => {
     </div>
   );
 
+  // @ts-ignore
   const user: { id: string; csrfToken: string } = session?.user as {
     id: string;
     csrfToken: string;
@@ -154,11 +154,7 @@ const WorkerInfo = ({ data }: { data: DataType[] }) => {
                   csrfToken: user.csrfToken,
                   wid: id,
                 };
-                const retPromise = await fetch("/api/getWorkerImg", {
-                  method: "POST",
-                  body: JSON.stringify(data),
-                });
-                const ret = await retPromise.json();
+                const ret: any = await postAxios("/admin/getWorkerImg", data);
                 if (ret.img) {
                   Modal.info({
                     title: "查看人脸",
@@ -206,11 +202,7 @@ const WorkerInfo = ({ data }: { data: DataType[] }) => {
                   id: user.id,
                   csrfToken: user.csrfToken,
                 };
-                const retPromise = await fetch("/api/workerClock", {
-                  method: "POST",
-                  body: JSON.stringify(data),
-                });
-                const ret = await retPromise.json();
+                const ret: any = await postAxios("/admin/getWorkerClock", data);
                 if (Array.isArray(ret)) {
                   list = ret;
                   console.log(ret);
@@ -266,6 +258,25 @@ const WorkerInfo = ({ data }: { data: DataType[] }) => {
       ),
     },
   ];
+
+  useEffect(() => {
+    (async () => {
+      try {
+        console.log(session);
+        const data = {
+          // @ts-ignore
+          id: session?.user?.id,
+          // @ts-ignore
+          csrfToken: session?.user?.csrfToken,
+        };
+        const ret = await postAxios("/admin/getWorkerInfo", data);
+        console.log(ret);
+        if (Array.isArray(ret)) {
+          setData(() => ret);
+        }
+      } catch (err) {}
+    })();
+  }, []);
   return (
     <>
       <Head>
@@ -306,19 +317,6 @@ const WorkerInfo = ({ data }: { data: DataType[] }) => {
 
 WorkerInfo.getLayout = function getLayout(page: ReactElement) {
   return <IndexLayout>{page}</IndexLayout>;
-};
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  let data: DataType[] = [];
-  try {
-    const res = await getAxios("/admin/workerInfo", {});
-    if (Array.isArray(res)) {
-      data = res;
-    }
-  } catch (error) {}
-  return {
-    props: { data },
-  };
 };
 
 export default WorkerInfo;

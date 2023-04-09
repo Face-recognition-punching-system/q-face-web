@@ -1,8 +1,16 @@
 /*
  * @Author       : Pear107
+ * @Date         : 2023-01-30 19:39:26
+ * @LastEditors  : Pear107
+ * @LastEditTime : 2023-04-07 23:45:13
+ * @FilePath     : \q-face-web\src\layouts\indexLayout.tsx
+ * @Description  : 头部注释
+ */
+/*
+ * @Author       : Pear107
  * @Date         : 2023-01-28 19:20:36
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-03-07 08:35:10
+ * @LastEditTime : 2023-04-04 15:07:19
  * @FilePath     : \q-face-web\src\layouts\indexLayout.tsx
  * @Description  : 头部注释
  */
@@ -34,12 +42,10 @@ const IndexLayout = ({ children }: { children: ReactElement }) => {
     key = ["1"];
   } else if (router.pathname === "/workerInfo") {
     key = ["2"];
-  } else if (router.pathname === "/askForLeave") {
-    key = ["3"];
   } else if (router.pathname === "/feedback") {
-    key = ["4"];
+    key = ["3"];
   } else if (router.pathname === "/statistics") {
-    key = ["5"];
+    key = ["4"];
   }
   const items: MenuProps["items"] = [
     {
@@ -82,14 +88,10 @@ const IndexLayout = ({ children }: { children: ReactElement }) => {
     },
     {
       key: "3",
-      label: <Link href="/askForLeave">请假管理</Link>,
-    },
-    {
-      key: "4",
       label: <Link href="/feedback">反馈管理</Link>,
     },
     {
-      key: "5",
+      key: "4",
       label: <Link href="/statistics">数据统计</Link>,
     },
   ];
@@ -207,7 +209,10 @@ const IndexLayout = ({ children }: { children: ReactElement }) => {
               <a onClick={(e) => e.preventDefault()}>
                 <Space className="flex items-center">
                   <span className="text-white cursor-pointer">
-                    {session?.user?.adminId}
+                    {
+                      //@ts-ignore
+                      session?.user?.adminId
+                    }
                   </span>
                   <Avatar
                     src={
