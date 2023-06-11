@@ -1,3 +1,11 @@
+/*
+ * @Author       : Pear107
+ * @Date         : 2023-04-05 00:40:41
+ * @LastEditors  : Pear107
+ * @LastEditTime : 2023-05-08 09:08:06
+ * @FilePath     : \q-face-web\server.js
+ * @Description  : 头部注释
+ */
 const express = require("express");
 const next = require("next");
 const { createProxyMiddleware } = require("http-proxy-middleware");
@@ -14,11 +22,8 @@ app
   .then(() => {
     const server = express();
     server.use(
-      createProxyMiddleware("/api-cpp", {
+      createProxyMiddleware("/admin", {
         target: process.env.REACT_APP_HOST,
-        pathRewrite: {
-          "^/api-cpp": "",
-        },
         changeOrigin: true,
       })
     );

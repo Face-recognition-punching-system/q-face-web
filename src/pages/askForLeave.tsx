@@ -11,7 +11,6 @@ import { Table, Tag, Tabs, Button, Space } from "antd";
 import type { TabsProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import Head from "next/head";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 import IndexLayout from "@/layouts/indexLayout";
@@ -40,11 +39,7 @@ const Feedback: {
 } = () => {
   const [notDeal, setNotDeal] = useState<NotDealType[]>([]);
   const [deal, setDeal] = useState<DealType[]>([]);
-  const { data: session } = useSession({ required: true });
-  const user: { id: string; csrfToken: string } = session?.user as {
-    id: string;
-    csrfToken: string;
-  };
+  const user: { id: string; csrfToken: string } = { id: "", csrfToken: "" };
   const columns1: ColumnsType<NotDealType> = [
     {
       title: "员工号",
@@ -178,10 +173,8 @@ const Feedback: {
     (async () => {
       try {
         const data = {
-          // @ts-ignore
-          id: session?.user?.id,
-          // @ts-ignore
-          csrfToken: session?.user?.csrfToken,
+          id: "",
+          token: "",
         };
         const notDealPromise = await postAxios("/admin/getFeedback", data);
         const dealPromise = await postAxios("/admin/getFeedbackResult", data);

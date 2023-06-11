@@ -2,7 +2,7 @@
  * @Author       : Pear107
  * @Date         : 2023-01-30 19:39:26
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-04-07 23:45:13
+ * @LastEditTime : 2023-05-15 15:37:25
  * @FilePath     : \q-face-web\src\layouts\indexLayout.tsx
  * @Description  : 头部注释
  */
@@ -14,7 +14,7 @@
  * @FilePath     : \q-face-web\src\layouts\indexLayout.tsx
  * @Description  : 头部注释
  */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { ReactElement } from "react";
 import { Layout, Menu, Avatar, Image, MenuProps, Dropdown, Space } from "antd";
 import { Modal, Input, Form, message } from "antd";
@@ -27,15 +27,15 @@ import {
   LockOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/router";
+import Router, { useRouter } from "next/router";
+import cookie from "react-cookies";
+
+import { postAxios } from "@/utils/axios";
 
 const { Header, Footer, Sider, Content } = Layout;
 const IndexLayout = ({ children }: { children: ReactElement }) => {
-  const { data: session } = useSession({ required: true });
-  const user: { id: string; csrfToken: string; adminId: string } =
-    session?.user as { id: string; csrfToken: string; adminId: string };
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [adminId, setAdminId] = useState<string>("");
   let key = ["1"];
   const router = useRouter();
   if (router.pathname === "/") {
@@ -67,7 +67,10 @@ const IndexLayout = ({ children }: { children: ReactElement }) => {
         <div
           className="flex items-center gap-1"
           onClick={() => {
-            signOut({ callbackUrl: "/auth/signIn" });
+            cookie.remove("adminId");
+            cookie.remove("aid");
+            cookie.remove("token");
+            Router.replace("/signIn");
           }}
         >
           <LogoutOutlined />
@@ -80,11 +83,11 @@ const IndexLayout = ({ children }: { children: ReactElement }) => {
   const menuItems = [
     {
       key: "1",
-      label: <Link href="/">今日打卡</Link>,
+      label: <Link href="/">打卡记录</Link>,
     },
     {
       key: "2",
-      label: <Link href="/workerInfo">员工信息</Link>,
+      label: <Link href="/worker">员工信息</Link>,
     },
     {
       key: "3",
@@ -95,6 +98,16 @@ const IndexLayout = ({ children }: { children: ReactElement }) => {
       label: <Link href="/statistics">数据统计</Link>,
     },
   ];
+  useEffect(() => {
+    if (
+      cookie.load("token") === undefined ||
+      cookie.load("aid") === undefined
+    ) {
+      Router.replace("/signIn");
+    }
+
+    setAdminId(() => cookie.load("adminId") ?? "");
+  }, []);
   return (
     <>
       <Modal
@@ -117,15 +130,9 @@ const IndexLayout = ({ children }: { children: ReactElement }) => {
           onFinish={async (value: { newPassword: string }) => {
             const data = {
               password: value.newPassword,
-              id: user.id,
-              csrfToken: user.csrfToken,
             };
             try {
-              const retPromise = await fetch("/api/updatePassword", {
-                method: "POST",
-                body: JSON.stringify(data),
-              });
-              const ret = await retPromise.json();
+              const ret: any = await postAxios("/admin/updatePassword", data);
               if (ret.message == "success") {
                 message.success("更新成功");
                 setModalOpen(false);
@@ -208,12 +215,7 @@ const IndexLayout = ({ children }: { children: ReactElement }) => {
             <Dropdown menu={{ items }}>
               <a onClick={(e) => e.preventDefault()}>
                 <Space className="flex items-center">
-                  <span className="text-white cursor-pointer">
-                    {
-                      //@ts-ignore
-                      session?.user?.adminId
-                    }
-                  </span>
+                  <span className="text-white cursor-pointer">{adminId}</span>
                   <Avatar
                     src={
                       <Image

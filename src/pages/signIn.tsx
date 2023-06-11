@@ -2,7 +2,7 @@
  * @Author       : Pear107
  * @Date         : 2023-01-29 10:28:11
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-04-05 21:09:09
+ * @LastEditTime : 2023-05-08 10:13:46
  * @FilePath     : \q-face-web\src\pages\signIn.tsx
  * @Description  : 头部注释
  */
@@ -10,8 +10,8 @@ import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Button, Form, Input, message } from "antd";
 import Head from "next/head";
-import { signIn } from "next-auth/react";
-import { getCsrfToken } from "next-auth/react";
+import cookie from "react-cookies";
+import Router from "next/router";
 
 import imgSignIn from "@/assets/svgs/signIn.svg";
 import { postAxios } from "@/utils/axios";
@@ -25,28 +25,19 @@ const SignIn: React.FC<{ csrfToken: any }> = () => {
   };
   const onFinish = async (values: { adminId: string; password: string }) => {
     setTime(() => 10);
-    const csrfToken = await getCsrfToken();
-    if (csrfToken == undefined) {
-      return;
-    }
     const data: {
       adminId: string;
-      password?: string;
-      csrfToken: string;
-      id?: string;
+      password: string;
     } = {
-      csrfToken,
       ...values,
     };
     try {
       const ret: any = await postAxios("/admin/signIn", data);
-      if (ret.id) {
-        data["id"] = ret.id;
-        data["password"] = "";
-        signIn("credentials", {
-          ...data,
-          callbackUrl: "http://localhost:3000/",
-        });
+      if (ret.message == "success") {
+        messageApi.success("登录成功");
+        setTimeout(() => {
+          Router.replace("/");
+        }, 1000);
       } else {
         messageApi.error("登录失败，请确认账户密码是否正确");
       }

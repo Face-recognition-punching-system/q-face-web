@@ -2,11 +2,13 @@
  * @Author       : Pear107
  * @Date         : 2023-03-06 21:21:19
  * @LastEditors  : Pear107
- * @LastEditTime : 2023-04-04 15:08:06
+ * @LastEditTime : 2023-06-03 02:43:10
  * @FilePath     : \q-face-web\src\components\calendar\index.tsx
  * @Description  : 头部注释
  */
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import React, { useEffect, useRef, useState } from "react";
+import { select } from "react-cookies";
 
 import styles from "./index.module.less";
 
@@ -47,15 +49,18 @@ const basic = {
   day: new Date().getDate(),
 };
 
-const Calendar: React.FC = () => {
-  const [day, setDay] = useState<
-    { label: number; curr: boolean; check: boolean }[]
-  >([]);
-  const [select, setSelect] = useState<{
+const Calendar: React.FC<{
+  select: {
     day: number;
     month: number;
     year: number;
-  }>({ day: 0, month: 0, year: 0 });
+  };
+  setSelect: any;
+}> = ({ select, setSelect }) => {
+  const [day, setDay] = useState<
+    { label: number; curr: boolean; check: boolean }[]
+  >([]);
+
   const date = useRef({ year: basic.year, month: basic.month, day: basic.day });
   useEffect(() => {
     setSelect({ ...basic });
@@ -63,7 +68,6 @@ const Calendar: React.FC = () => {
   }, []);
 
   const handlePrev = () => {
-    console.log("prev");
     let month: number;
     let year: number;
     let day = select.day;
@@ -85,7 +89,6 @@ const Calendar: React.FC = () => {
   };
 
   const handleNext = () => {
-    console.log("next");
     let month: number;
     let year: number;
     let day = select.day;
@@ -104,7 +107,55 @@ const Calendar: React.FC = () => {
       setSelect(() => {
         return { year: year, month: month, day: day };
       });
+    }
+  };
+
+  const handleSelect = (day: number, curr: boolean) => {
+    let month: number = select.month;
+    let year: number = select.year;
+    setSelect(() => ({ ...{ year, month, day } }));
+    if (curr) {
       Day(year, month, day);
+      setSelect(() => ({ year, month, day }));
+    } else {
+      if (day > 15) {
+        let month: number;
+        let year: number;
+        if (Number(select.month) > 1) {
+          month = select.month - 1;
+          year = select.year;
+          Day(year, month, day);
+        }
+
+        if (Number(select.month) === 1) {
+          month = 12;
+          year = select.year - 1;
+          Day(year, month, day);
+        }
+
+        setSelect(() => {
+          return { year: year, month: month, day: day };
+        });
+      } else {
+        let month: number;
+        let year: number;
+        if (select.month < 12) {
+          month = Number(select.month) + 1;
+          year = select.year;
+          setSelect(() => {
+            return { year: year, month: month, day: day };
+          });
+          Day(year, month, day);
+        }
+
+        if (select.month == 12) {
+          month = 1;
+          year = Number(select.year) + 1;
+          setSelect(() => {
+            return { year: year, month: month, day: day };
+          });
+        }
+      }
     }
   };
 
@@ -150,11 +201,7 @@ const Calendar: React.FC = () => {
 
     for (let i = 1; i <= total; i++) {
       let check = false;
-      if (
-        year == date.current.year &&
-        month == date.current.month &&
-        i == date.current.day
-      ) {
+      if (year == year && month == month && i == day) {
         check = true;
       }
 
@@ -171,11 +218,11 @@ const Calendar: React.FC = () => {
   return (
     <div className={styles.calendar}>
       <div className={styles.bar}>
-        {/* <LeftOutlined onClick={handlePrev} /> */}
+        <LeftOutlined onClick={handlePrev} />
         <span>
           {select.year}年{select.month}月
         </span>
-        {/* <RightOutlined onClick={handleNext} /> */}
+        <RightOutlined onClick={handleNext} />
       </div>
       <div className={styles.date}>
         {week.map((item) => {
@@ -192,6 +239,7 @@ const Calendar: React.FC = () => {
               className={`${styles.day} ${item.curr ? `${styles.curr}` : ""} ${
                 item.check ? `${styles.check}` : ""
               }`}
+              onClick={handleSelect.bind(this, item.label, item.curr)}
             >
               <span>{item.label}</span>
             </div>

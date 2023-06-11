@@ -38,9 +38,7 @@ const WorkCalendar: {
           const start = 0;
           const end = 12;
           const monthOptions = [];
-
           let current = value.clone();
-          //@ts-ignore
           const localeData = value.localeData();
           const months = [];
           for (let i = 0; i < 12; i++) {
